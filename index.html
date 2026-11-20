@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+
+    <!-- Zero-FOUC theme bootstrap: runs before stylesheet to avoid flash of wrong theme -->
+    <script>
+      (function () {
+        var t = localStorage.getItem('dashboard_theme');
+        if (!t) {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+
+    <!-- Theme Controller -->
+    <header id="theme-controller" data-widget="theme-controller">
+      <!-- ThemeController renders toggle button here -->
+    </header>
+
+    <main id="dashboard-grid" class="dashboard">
+
+      <!-- Greeting Widget -->
+      <section id="greeting-widget" data-widget="greeting">
+        <p id="greeting-time" aria-label="Current time"></p>
+        <p id="greeting-date" aria-label="Current date"></p>
+        <p id="greeting-message" aria-label="Greeting"></p>
+
+        <!-- Name form — Req 2.1: input accepts up to 50 characters -->
+        <form class="greeting-name-form" aria-label="Set your name">
+          <label for="greeting-name-input">Your name</label>
+          <input
+            type="text"
+            id="greeting-name-input"
+            name="username"
+            maxlength="50"
+            placeholder="Enter your name"
+            autocomplete="off"
+          />
+          <button type="submit">Save</button>
+        </form>
+      </section>
+
+      <!-- Timer Widget -->
+      <section id="timer-widget" data-widget="timer">
+        <p id="timer-display" aria-label="Timer countdown" aria-live="off">25:00</p>
+        <div class="timer-controls" role="group" aria-label="Timer controls">
+          <button id="timer-start" type="button">Start</button>
+          <button id="timer-stop"  type="button" disabled>Stop</button>
+          <button id="timer-reset" type="button">Reset</button>
+        </div>
+        <!-- Duration input — wired by _saveDuration in task 6.5 -->
+        <div class="timer-duration-row">
+          <label for="timer-duration-input">Duration (min)</label>
+          <input
+            type="number"
+            id="timer-duration-input"
+            name="pomodoro_duration"
+            min="1"
+            max="120"
+            value="25"
+            aria-describedby="timer-duration-error"
+          />
+          <button type="button" id="timer-duration-save">Save</button>
+          <span id="timer-duration-error" class="field-error" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <!-- To-Do Widget -->
+      <section id="todo-widget" data-widget="todo">
+        <!-- Error banners are inserted before .todo-content by _showSaveError() -->
+        <div class="todo-content">
+          <!-- Add-task form -->
+          <form class="todo-add-form" aria-label="Add a task">
+            <label for="todo-input">New task</label>
+            <input
+              type="text"
+              id="todo-input"
+              name="todo_label"
+              maxlength="150"
+              placeholder="Enter a task…"
+              autocomplete="off"
+              aria-describedby="todo-field-error"
+            />
+            <button type="submit">Add</button>
+            <span id="todo-field-error" class="todo-field-error field-error" aria-live="polite"></span>
+          </form>
+
+          <!-- Task list — populated by TodoWidget._render() -->
+          <ul id="todo-list" aria-label="Task list"></ul>
+        </div>
+      </section>
+
+      <!-- Quick Links Widget -->
+      <section id="links-widget" data-widget="links">
+        <!-- Error banners are inserted before .links-content by _showLoadError() / _showSaveError() -->
+        <div class="links-content">
+          <!-- Add-link form -->
+          <form class="links-add-form" aria-label="Add a quick link">
+            <label for="links-label-input">Label</label>
+            <input
+              type="text"
+              id="links-label-input"
+              name="link_label"
+              maxlength="100"
+              placeholder="e.g. GitHub"
+              autocomplete="off"
+              aria-describedby="links-field-error"
+            />
+            <label for="links-url-input">URL</label>
+            <input
+              type="text"
+              id="links-url-input"
+              name="link_url"
+              maxlength="2048"
+              placeholder="e.g. github.com"
+              autocomplete="off"
+              aria-describedby="links-field-error"
+            />
+            <button type="submit">Add</button>
+            <span id="links-field-error" class="links-field-error field-error" aria-live="polite"></span>
+          </form>
+
+          <!-- Link buttons — populated by LinksWidget._render() -->
+          <ul id="links-list" aria-label="Quick links"></ul>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="js/app.js" defer></script>
+  </body>
+</html>

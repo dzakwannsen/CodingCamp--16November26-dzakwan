@@ -1,0 +1,379 @@
+/* ==========================================================================
+   Browser Start-Page Dashboard — css/style.css
+   All layout, theming, and animation rules.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties (Design Token Contract)
+   All widget styles reference only these variables.
+   Swapping data-theme on <html> re-skins every element instantly.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --color-bg:        #f5f5f5;
+  --color-surface:   #ffffff;
+  --color-text:      #1a1a1a;
+  --color-accent:    #4a7cf7;
+  --color-muted:     #757575;
+  --color-danger:    #d32f2f;
+  --color-border:    #d9d9d9;
+}
+
+[data-theme="dark"] {
+  --color-bg:        #121212;
+  --color-surface:   #1e1e1e;
+  --color-text:      #e8e8e8;
+  --color-accent:    #7ea8fa;
+  --color-muted:     #9e9e9e;
+  --color-danger:    #ef5350;
+  --color-border:    #333333;
+}
+
+/* --------------------------------------------------------------------------
+   Global reset and base styles
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* Theme transition — satisfies the 100 ms switch requirement (Req 7.2) */
+  transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard grid — responsive column layout (Req 8.2)
+   -------------------------------------------------------------------------- */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Widget card base styles — all colours via --color-* variables (Req 7.7)
+   -------------------------------------------------------------------------- */
+#greeting-widget,
+#timer-widget,
+#todo-widget,
+#links-widget,
+#theme-controller {
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   TodoWidget — completed task visual style (Req 5.1)
+   -------------------------------------------------------------------------- */
+#todo-list li.completed .todo-label {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Theme transition — satisfies the 100 ms switch requirement (Req 7.2)
+   -------------------------------------------------------------------------- */
+body,
+.dashboard > * {
+  transition: background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Greeting Widget
+   -------------------------------------------------------------------------- */
+#greeting-widget {
+  grid-column: 1 / -1; /* span full width */
+}
+
+#greeting-time {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+#greeting-date {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+#greeting-message {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.greeting-name-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Timer Widget
+   -------------------------------------------------------------------------- */
+#timer-display {
+  font-size: 3rem;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Visual completion fallback when Web Audio is unavailable (Req 3.6) */
+@keyframes timer-pulse {
+  0%,
+  100% { color: var(--color-accent); }
+  50%  { color: var(--color-danger); }
+}
+
+#timer-display.timer-complete {
+  animation: timer-pulse 0.8s ease-in-out infinite;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.timer-duration-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Theme Controller — fixed top-right, outside the grid (Req 7.1)
+   -------------------------------------------------------------------------- */
+#theme-controller {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  background-color: var(--color-surface);
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  padding: 0.4rem 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Theme toggle button — wired by ThemeController as [data-toggle="theme"] */
+[data-toggle="theme"] {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  color: var(--color-text);
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+[data-toggle="theme"]:hover {
+  transform: rotate(20deg);
+}
+
+/* Show/hide sun and moon icons based on current theme.
+   The toggle button is [data-toggle="theme"]; SVGs carry .theme-icon--sun / .theme-icon--moon. */
+[data-theme="light"] [data-toggle="theme"] .theme-icon--sun  { display: none;   }
+[data-theme="light"] [data-toggle="theme"] .theme-icon--moon { display: inline; }
+[data-theme="dark"]  [data-toggle="theme"] .theme-icon--sun  { display: inline; }
+[data-theme="dark"]  [data-toggle="theme"] .theme-icon--moon { display: none;   }
+
+/* --------------------------------------------------------------------------
+   Form inputs — base styles using --color-* variables
+   -------------------------------------------------------------------------- */
+input[type="text"],
+input[type="number"] {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline-offset: 2px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: 2px solid var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons — base, hover, and primary variant
+   -------------------------------------------------------------------------- */
+button {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+  border-color: var(--color-accent);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Primary submit buttons (Save / Add) */
+button[type="submit"],
+#timer-duration-save {
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+  border-color: var(--color-accent);
+}
+
+button[type="submit"]:hover:not(:disabled),
+#timer-duration-save:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+/* --------------------------------------------------------------------------
+   Validation error messages
+   -------------------------------------------------------------------------- */
+.field-error {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Todo Widget
+   -------------------------------------------------------------------------- */
+#todo-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.75rem;
+}
+
+#todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+#todo-list li:last-child {
+  border-bottom: none;
+}
+
+.todo-label {
+  flex: 1;
+  word-break: break-word;
+}
+
+.todo-add-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.todo-add-form input[type="text"] {
+  flex: 1;
+  min-width: 8rem;
+}
+
+/* --------------------------------------------------------------------------
+   Quick Links Widget
+   -------------------------------------------------------------------------- */
+#links-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.links-launch {
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+  border: none;
+  border-radius: 2rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+
+.links-launch:hover {
+  opacity: 0.82;
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.links-add-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.links-add-form input[type="text"] {
+  flex: 1;
+  min-width: 7rem;
+}
+
+#links-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Small delete buttons inside link rows */
+.links-delete,
+.todo-delete,
+.todo-edit {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.links-delete:hover,
+.todo-delete:hover,
+.todo-edit:hover {
+  background-color: var(--color-danger);
+  color: var(--color-surface);
+  border-color: transparent;
+}
